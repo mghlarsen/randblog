@@ -60,8 +60,8 @@ class Feed(object):
                 self._info['status'] = self._feed_status
                 feed_collection.save(self._info)
 
-    def update(self):
-        self._feed_load(True)
+    def update(self, update = True):
+        self._feed_load(update)
 
     @property
     def feed(self):
