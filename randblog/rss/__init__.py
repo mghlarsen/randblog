@@ -1,4 +1,4 @@
-from trgtb import db
+from randblog import db
 
 feed_collection = db['feeds']
 

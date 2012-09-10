@@ -1,4 +1,4 @@
-from trgtb.rss import feed_collection
+from randblog.rss import feed_collection
 import feedparser
 
 class Feed(object):
