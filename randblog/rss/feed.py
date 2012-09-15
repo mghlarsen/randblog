@@ -30,7 +30,7 @@ class Feed(object):
 
     def _db_entries_load(self):
         for e in entry_collection.find({'feed': self.info['_id']}):
-            self._entries[e['id']] = e
+            self._entries[e['id']] = Entry(self, e['id'], e)
 
     def _db_load(self):
         if self._info is None:
@@ -93,6 +93,7 @@ class Feed(object):
                             data[key] = value
                     e = Entry(self, data['id'], data)
                     self._entries[e.id] = e
+                    e.clean()
                     e.save()
 
     def update(self, update = True):

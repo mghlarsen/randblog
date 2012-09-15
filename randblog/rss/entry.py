@@ -1,5 +1,7 @@
 from randblog.rss import entry_collection
 
+from bs4 import BeautifulSoup
+
 class Entry(object):
 
     def __init__(self, feed, id, data = None):
@@ -34,3 +36,5 @@ class Entry(object):
     def save(self):
         entry_collection.save(self._info)
 
+    def clean(self):
+        self._info['cleaned'] = {'text': BeautifulSoup(self._info['summary'], 'html5lib').get_text().strip()}
