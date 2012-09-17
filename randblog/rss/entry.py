@@ -37,4 +37,38 @@ class Entry(object):
         entry_collection.save(self._info)
 
     def clean(self):
-        self._info['cleaned'] = {'text': BeautifulSoup(self._info['summary'], 'html5lib').get_text().strip()}
+        self.info['cleaned'] = {'text': BeautifulSoup(self._info['summary'], 'html5lib').get_text().strip()}
+ 
+    def stats_collect(self):
+        content = self.info['cleaned']['text']
+        words = content.split() + ['<END>']
+        words = map(lambda w: w.replace('.', '<period>').replace('$', '<dollar>'), words)
+        stats = {'2gram':{}, '3gram':{}, '4gram':{}}
+
+        for i in range(len(words)):
+            if i > 0:
+                ngram(stats['2gram'], words[i-1:i+1])
+            else:
+                ngram(stats['2gram'], ('<START>', words[0]))
+            if i > 1:
+                ngram(stats['3gram'], words[i-2:i+1])
+            else:
+                ngram(stats['3gram'], (['<START>',] * (2 - i)) + words[:i+1])
+            if i > 2:
+                ngram(stats['4gram'], words[i-3:i+1])
+            else:
+                ngram(stats['4gram'], (['<START>',] * (3 - i)) + words[:i+1])
+        self.info['stats'] = stats
+
+def ngram(stat, words):
+    n = len(words)
+    if n > 1:
+        if not words[0] in stat:
+            stat[words[0]] = {}
+        ngram(stat[words[0]], words[1:])
+    else:
+        if not words[0] in stat:
+            stat[words[0]] = 1
+        else:
+            stat[words[0]] += 1
+

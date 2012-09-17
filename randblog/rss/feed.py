@@ -99,6 +99,23 @@ class Feed(object):
     def update(self, update = True):
         self._feed_load(update)
 
+    def clean(self):
+        def t(e):
+            e.clean()
+            e.save()
+        self._each_entry(t)
+
+    def stats_collect(self):
+        def t(e):
+            e.stats_collect()
+            e.save()
+        self._each_entry(t)
+
+    def _each_entry(self, task):
+        self._db_entries_load()
+        for e in self.entries.values():
+            task(e)
+
     @property
     def feed(self):
         if self._feed is None:
