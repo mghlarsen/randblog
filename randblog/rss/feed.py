@@ -1,4 +1,4 @@
-from randblog.rss import feed_collection, entry_collection
+from randblog.rss import feed_collection, entry_collection, stats_collection
 from randblog.rss.entry import Entry
 import feedparser
 
@@ -20,8 +20,12 @@ class Feed(object):
         return map(lambda f: cls(f['name'], f['url'], f), feed_collection.find(query))
 
     @classmethod
-    def stats(cls):
-        return statsAgg(map(lambda f: f.stats_collect(), cls.find()))
+    def stats(cls, compute=True):
+        stats = stats_collection.find_one({'name':'global'})
+        if compute or stats is None:
+            stats = {'name': 'global', 'data': statsAgg(map(lambda f: f.stats_collect(), cls.find()))}
+            stats_collection.save(stats)
+        return stats['data']
 
     def __init__(self, name, url=None, info=None):
         self._name = name

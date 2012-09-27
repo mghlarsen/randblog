@@ -75,11 +75,13 @@ if __name__ == '__main__':
             do_task_for_feeds(lambda f: f.stats_collect(True), toStat)
     elif sys.argv[1] == 'global':
         if sys.argv[2] == 'stats':
-            with open(sys.argv[3], 'w') as out:
-                import json
-                out.write(json.dumps(Feed.stats()))
-        elif sys.argv[2] == 'generate':
             stats = Feed.stats()
+            if len(sys.argv) > 3:
+                with open(sys.argv[3], 'w') as out:
+                    import json
+                    out.write(json.dumps(stats))
+        elif sys.argv[2] == 'generate':
+            stats = Feed.stats(False)
             n = None
 
             if len(sys.argv) > 3:
