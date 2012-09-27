@@ -31,7 +31,7 @@ if __name__ == '__main__':
             
             do_task_for_feeds(lambda f: f.clean(), toClean)
 
-        if sys.argv[2] == 'stats':
+        elif sys.argv[2] == 'stats':
             if len(sys.argv) == 3:
                 toStat = Feed.find()
             else:
