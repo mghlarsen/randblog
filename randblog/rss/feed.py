@@ -19,6 +19,10 @@ class Feed(object):
     def find(cls, query={}):
         return map(lambda f: cls(f['name'], f['url'], f), feed_collection.find(query))
 
+    @classmethod
+    def stats(cls):
+        return statsAgg(map(lambda f: f.stats_collect(), cls.find()))
+
     def __init__(self, name, url=None, info=None):
         self._name = name
         if not url is None:
@@ -103,18 +107,22 @@ class Feed(object):
         def t(e):
             e.clean()
             e.save()
-        self._each_entry(t)
+        self._map_entries(t)
 
-    def stats_collect(self):
+    def stats_collect(self, save=False):
         def t(e):
             e.stats_collect()
             e.save()
-        self._each_entry(t)
+            return e.info['stats']
+        statsList = self._map_entries(t)
+        self.info['stats'] = statsAgg(statsList)
+        if save:
+            feed_collection.save(self.info)
+        return self.info['stats']
 
-    def _each_entry(self, task):
+    def _map_entries(self, task):
         self._db_entries_load()
-        for e in self.entries.values():
-            task(e)
+        return map(task, self.entries.values())
 
     @property
     def feed(self):
@@ -158,3 +166,22 @@ class Feed(object):
 
     def __repr__(self):
         return '<Feed %s ("%s": %s)>' % (self.name, self.title, self.url)
+
+def statsAgg(statsList):
+    res = {'2gram':{}, '3gram':{}, '4gram':{}, '5gram':{}}
+    for stat in statsList:
+        aggNGram(res['2gram'], stat['2gram'], 2)
+        aggNGram(res['3gram'], stat['3gram'], 3)
+        aggNGram(res['4gram'], stat['4gram'], 4)
+        aggNGram(res['5gram'], stat['5gram'], 5)
+    return res
+
+def aggNGram(agg, curr, n):
+    for key, value in curr.items():
+        if not key in agg:
+            agg[key] = curr[key]
+        elif n > 1:
+            aggNGram(agg[key], curr[key], n - 1)
+        else:
+            agg[key] += curr[key]
+

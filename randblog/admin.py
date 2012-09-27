@@ -5,7 +5,7 @@ pool = Pool()
 
 def do_task_for_feeds(task, feeds):
     for res in pool.map(task, feeds):
-        if not res is None:
+        if not res is None and not isinstance(res, dict):
             res.join()
             print res.value
 
@@ -37,5 +37,10 @@ if __name__ == '__main__':
             else:
                 toStat = [Feed.get(f) for f in sys.argv[3:]]
 
-            do_task_for_feeds(lambda f: f.stats_collect(), toStat)
+            do_task_for_feeds(lambda f: f.stats_collect(True), toStat)
+    elif sys.argv[1] == 'global':
+        if sys.argv[2] == 'stats':
+            with open(sys.argv[3], 'w') as out:
+                import json
+                out.write(json.dumps(Feed.stats()))
 

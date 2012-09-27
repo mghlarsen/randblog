@@ -43,7 +43,7 @@ class Entry(object):
         content = self.info['cleaned']['text']
         words = content.split() + ['<END>']
         words = map(lambda w: w.replace('.', '<period>').replace('$', '<dollar>'), words)
-        stats = {'2gram':{}, '3gram':{}, '4gram':{}}
+        stats = {'2gram':{}, '3gram':{}, '4gram':{}, '5gram':{}}
 
         for i in range(len(words)):
             if i > 0:
@@ -58,6 +58,10 @@ class Entry(object):
                 ngram(stats['4gram'], words[i-3:i+1])
             else:
                 ngram(stats['4gram'], (['<START>',] * (3 - i)) + words[:i+1])
+            if i > 3:
+                ngram(stats['5gram'], words[i-4:i+1])
+            else:
+                ngram(stats['5gram'], (['<START>',] * (4 - i)) + words[:i+1])
         self.info['stats'] = stats
 
 def ngram(stat, words):
