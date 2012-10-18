@@ -21,11 +21,19 @@ class Feed(object):
 
     @classmethod
     def stats(cls, compute=True):
-        stats = stats_collection.find_one({'name':'global'})
-        if compute or stats is None:
-            stats = {'name': 'global', 'data': statsAgg(map(lambda f: f.stats_collect(), cls.find()))}
-            stats_collection.save(stats)
-        return stats['data']
+        stats = {}
+        for piece in stats_collection.find({'name':'global'}):
+            stats[str(piece['gramLen'])+'gram'] = piece['data']
+        if compute or len(stats.keys()) < 4:
+            newStats = statsAgg(map(lambda f: f.stats_collect(), cls.find()))
+            for name, data in newStats.items():
+                if not name in stats:
+                    gramData = {'name':'global', 'gramLen': int(name[0])}
+                else:
+                    gramData = stats[name]
+                gramData['data'] = data
+                stats_collection.save(gramData)
+        return stats
 
     def __init__(self, name, url=None, info=None):
         self._name = name
@@ -121,8 +129,11 @@ class Feed(object):
         statsList = self._map_entries(t)
         self.info['stats'] = statsAgg(statsList)
         if save:
-            feed_collection.save(self.info)
+            self.save()
         return self.info['stats']
+
+    def save(self):
+        feed_collection.save(self.info)
 
     def _map_entries(self, task):
         self._db_entries_load()

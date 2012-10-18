@@ -36,12 +36,28 @@ class Entry(object):
     def save(self):
         entry_collection.save(self._info)
 
+    def _cleaned_soup(self):
+        soup = BeautifulSoup(self._info['summary'], 'html5lib')
+        if 'clean_actions' in self.feed.info:
+            for action in self.feed.info['clean_actions']:
+                for tag in soup.select(action['selector']):
+                    if 'match_text' in action and tag.get_text() != action['match_text']:
+                        continue
+                    if 'contains_text' in action and tag.get_text().find(action['contains_text']) == -1:
+                        continue
+                    if action['task'] == 'remove':
+                        tag.decompose()
+        return soup
+
     def clean(self):
-        self.info['cleaned'] = {'text': BeautifulSoup(self._info['summary'], 'html5lib').get_text().strip()}
+        self.info['cleaned'] = {'text': self._cleaned_soup().get_text().strip()}
  
     def stats_collect(self):
         content = self.info['cleaned']['text']
-        words = content.split() + ['<END>']
+        words = content.split()
+        while len(words) > 0 and words[-1] == '|':
+            words = words[:-1]
+        words.append('<END>')
         words = map(lambda w: w.replace('.', '<period>').replace('$', '<dollar>'), words)
         stats = {'2gram':{}, '3gram':{}, '4gram':{}, '5gram':{}}
 
