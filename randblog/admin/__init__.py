@@ -1,9 +1,7 @@
-from randblog.rss.feed import Feed
-from gevent.pool import Pool
-import random
-pool = Pool()
-
 from randblog.rss.admin import command as rss_command
+from randblog.rss.feed import Feed
+import random
+
 
 #TODO: Split up into better names
 def global_command(args):
@@ -48,12 +46,6 @@ def global_generate(args):
         words = words[4:]
 
     print ' '.join(map(lambda s: s.replace('<period>', '.').replace('<dollar>', '$'), words))
-
-def do_task_for_feeds(task, feeds):
-    for res in pool.map(task, feeds):
-        if not res is None and not isinstance(res, dict):
-            res.join()
-            print res.value
 
 def pickWord(stats, prevWords):
     s = stats
