@@ -1,55 +1,13 @@
 import sys
-from randblog.rss.feed import Feed
-from gevent.pool import Pool
-import random
-pool = Pool()
 
-def do_task_for_feeds(task, feeds):
-    for res in pool.map(task, feeds):
-        if not res is None and not isinstance(res, dict):
-            res.join()
-            print res.value
-
-def pickWord(stats, prevWords):
-    s = stats
-    for w in prevWords:
-        s = s[w]
-    choices = []
-    for word, count in s.items():
-        choices += [word] * count
-    return random.choice(choices)
-
-def pickWordMulti(stats, prevWords, maxN):
-    choices = []
-    wChoices = []
-    for n in range(2, maxN+1):
-        s = stats[str(n) + 'gram']
-        found = True
-        for w in prevWords[maxN - n:]:
-            if not w in s:
-                found = False
-                break
-            s = s[w]
-        if found:
-            choices.append((n, s))
-
-    for n, s in choices:
-        for word, count in s.items():
-            wChoices += ([word] * (count * (n - 1)**4))
-        if n - 2 == len(choices) and n != maxN:
-            for word, count in s.items():
-                wChoices += ([word] * (count * maxN**4))
-
-    if len(wChoices) == 0:
-        return '<END>'
-    return random.choice(wChoices)
+from randblog.admin import *
 
 if __name__ == '__main__':
     print sys.argv[1:]
     if sys.argv[1] == 'feed':
         if sys.argv[2] == 'add':
             Feed.add(sys.argv[3], sys.argv[4])
-        if sys.argv[2] == 'update':
+        elif sys.argv[2] == 'update':
             if len(sys.argv) > 3 and sys.argv[3] == 'False':
                 update = False
             else:
@@ -57,6 +15,24 @@ if __name__ == '__main__':
 
             feeds = Feed.find()
             do_task_for_feeds(lambda f: f.update(), feeds)
+        elif sys.argv[2] == 'clean_actions':
+            if sys.argv[3] == 'show':
+                if len(sys.argv) > 4:
+                    feeds = [Feed.get(sys.argv[4])]
+                else:
+                    feeds = Feed.find()
+                for feed in feeds:
+                    print feed.name
+                    if 'clean_actions' in feed.info:
+                        for action in feed.info['clean_actions']:
+                            print ' -', action['task'], action['selector']
+
+            elif sys.argv[3] == 'add':
+                f = Feed.get(sys.argv[4])
+                if not 'clean_actions' in f.info:
+                    f.info['clean_actions'] = []
+                f.info['clean_actions'].append({'selector': sys.argv[5], 'task': sys.argv[6]})
+                f.save()
     elif sys.argv[1] == 'entry':
         if sys.argv[2] == 'clean':
             if len(sys.argv) == 3:
