@@ -5,8 +5,10 @@ pool = Pool()
 def command(args):
     if args[0] == 'update':
         update(args[1:])
-    if args[0] == 'feed':
+    elif args[0] == 'feed':
         feed(args[1:])
+    else:
+        print "Valid commands: update, feed"
 
 def update(args):
     if len(args) > 0 and args[0] == 'False':
@@ -71,7 +73,7 @@ def feed_stats(args):
 
 def do_task_for_feeds(task, feeds):
     for res in pool.map(task, feeds):
-        if not res is None and not isinstance(res, dict):
+        if not res is None and hasattr(res, 'join'):
             res.join()
             print res.value
 

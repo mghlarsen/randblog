@@ -1,5 +1,6 @@
-from randblog.rss import feed_collection, entry_collection, stats_collection
+from randblog.rss import feed_collection, entry_collection
 from randblog.rss.entry import Entry
+from randblog.corpus.stats import Stats
 import feedparser
 
 class Feed(object):
@@ -21,18 +22,13 @@ class Feed(object):
 
     @classmethod
     def stats(cls, compute=True):
-        stats = {}
-        for piece in stats_collection.find({'name':'global'}):
-            stats[str(piece['gramLen'])+'gram'] = piece['data']
-        if compute or len(stats.keys()) < 4:
-            newStats = statsAgg(map(lambda f: f.stats_collect(), cls.find()))
-            for name, data in newStats.items():
-                if not name in stats:
-                    gramData = {'name':'global', 'gramLen': int(name[0])}
-                else:
-                    gramData = stats[name]
-                gramData['data'] = data
-                stats_collection.save(gramData)
+        for f in cls.find():
+            f.stats_collect(compute)
+        stats = Stats('global', {})
+        if compute:
+            stats.clear()
+            stats.aggregate({'name':'feed'})
+            stats.save()
         return stats
 
     def __init__(self, name, url=None, info=None):
@@ -121,16 +117,19 @@ class Feed(object):
             e.save()
         self._map_entries(t)
 
-    def stats_collect(self, save=False):
-        def t(e):
-            e.stats_collect()
-            e.save()
-            return e.info['stats']
-        statsList = self._map_entries(t)
-        self.info['stats'] = statsAgg(statsList)
-        if save:
-            self.save()
-        return self.info['stats']
+    def _stats_key(self):
+        return {'rss_feed':self.info['_id'], 'rss_feed_name':self.name}
+
+    def stats_collect(self, update=False):
+        self._map_entries(lambda e: e.corpus_item.stats_collect())
+        key = self._stats_key()
+        stats = Stats('feed', key)
+        if len(stats.get_ids()) == 0 or update:
+            key.update({'name':'item'})
+            stats.clear()
+            stats.aggregate(key)
+            stats.save()
+        return stats
 
     def save(self):
         feed_collection.save(self.info)

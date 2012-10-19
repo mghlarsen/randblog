@@ -9,6 +9,8 @@ def global_command(args):
         global_stats(args[1:])
     elif args[0] == 'generate':
         global_generate(args[1:])
+    else:
+        print "Valid commands: stats, generate"
 
 def global_stats(args):
     stats = Feed.stats()
@@ -25,10 +27,10 @@ def global_generate(args):
         n = int(args[0])
 
     if not n is None:
-        nStats = stats[str(n) + 'gram']
+        nStats = stats.nGram(n)
         words = ['<START>'] * (n - 1)
 
-        curr = pickWork(nStats, words)
+        curr = pickWord(nStats, words)
 
         while curr != '<END>':
             words.append(curr)
@@ -60,7 +62,7 @@ def pickWordMulti(stats, prevWords, maxN):
     choices = {}
     wChoices = []
     for n in range(2, maxN+1):
-        s = stats[str(n) + 'gram']
+        s = stats.nGram(n)
         found = True
         for w in prevWords[maxN - n:]:
             if not w in s:

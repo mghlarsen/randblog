@@ -1,4 +1,5 @@
 from randblog.rss import entry_collection
+from randblog.corpus.item import Item
 
 from bs4 import BeautifulSoup
 
@@ -49,46 +50,25 @@ class Entry(object):
                         tag.decompose()
         return soup
 
+    def _stats_key(self):
+        return {
+            'source':           'rss',
+            'rss_feed':         self._info['feed'],
+            'rss_feed_entry':   self.id
+        }
+
     def clean(self):
-        self.info['cleaned'] = {'text': self._cleaned_soup().get_text().strip()}
- 
-    def stats_collect(self):
-        content = self.info['cleaned']['text']
-        words = content.split()
-        while len(words) > 0 and words[-1] == '|':
-            words = words[:-1]
-        words.append('<END>')
-        words = map(lambda w: w.replace('.', '<period>').replace('$', '<dollar>'), words)
-        stats = {'2gram':{}, '3gram':{}, '4gram':{}, '5gram':{}}
+        key = self._stats_key()
+        key.update({
+            'text': self._cleaned_soup().get_text().strip()
+        })
+        item = Item(key)
+        item.save()
+        self.info['corpus_item'] = item.id
+        self.save()
 
-        for i in range(len(words)):
-            if i > 0:
-                ngram(stats['2gram'], words[i-1:i+1])
-            else:
-                ngram(stats['2gram'], ('<START>', words[0]))
-            if i > 1:
-                ngram(stats['3gram'], words[i-2:i+1])
-            else:
-                ngram(stats['3gram'], (['<START>',] * (2 - i)) + words[:i+1])
-            if i > 2:
-                ngram(stats['4gram'], words[i-3:i+1])
-            else:
-                ngram(stats['4gram'], (['<START>',] * (3 - i)) + words[:i+1])
-            if i > 3:
-                ngram(stats['5gram'], words[i-4:i+1])
-            else:
-                ngram(stats['5gram'], (['<START>',] * (4 - i)) + words[:i+1])
-        self.info['stats'] = stats
-
-def ngram(stat, words):
-    n = len(words)
-    if n > 1:
-        if not words[0] in stat:
-            stat[words[0]] = {}
-        ngram(stat[words[0]], words[1:])
-    else:
-        if not words[0] in stat:
-            stat[words[0]] = 1
-        else:
-            stat[words[0]] += 1
-
+    @property
+    def corpus_item(self):
+        if not hasattr(self, '_corpus_item') or self._corpus_item is None:
+            self._corpus_item = Item.find_one({'_id': self.info['corpus_item']})
+        return self._corpus_item
