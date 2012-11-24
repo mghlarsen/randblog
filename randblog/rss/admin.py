@@ -2,74 +2,41 @@ from randblog.rss.feed import Feed
 from gevent.pool import Pool
 pool = Pool()
 
-def command(args):
-    if args[0] == 'update':
-        update(args[1:])
-    elif args[0] == 'feed':
-        feed(args[1:])
+def get_feeds(args):
+    if not args.feed:
+        return Feed.find()
     else:
-        print "Valid commands: update, feed"
+        return map(Feed.get, args.feed)
 
 def update(args):
-    if len(args) > 0 and args[0] == 'False':
-        update = False
+    if not args.feed:
+        feeds = Feed.find()
     else:
-        update = True
-
-    feeds = Feed.find()
-    do_task_for_feeds(Feed.update, feeds)
-
-def feed(args):
-    if args[0] == 'add':
-        feed_add(args[1:])
-    elif args[0] == 'clean_actions':
-        feed_clean_actions(args[1:])
-    elif args[0] == 'clean':
-        feed_clean(args[1:])
-    elif args[0] == 'stats':
-        feed_stats(args[1:])
+        feeds = [Feed.get(f) for f in args.feed]
+    do_task_for_feeds(Feed.update, get_feeds(args))
 
 def feed_add(args):
-    Feed.add(args[0], args[1])
-
-def feed_clean_actions(args):
-    if args[0] == 'show':
-        feed_clean_actions_show(args[1:])
-    elif args[0] == 'add':
-        feed_clean_actions_add(args[1:])
+    Feed.add(args.name, args.url)
 
 def feed_clean_actions_show(args):
-    if len(args) > 0:
-        feeds = [Feed.get(args[0])]
-    else:
-        feeds = Feed.find()
-
-    for feed in feeds:
+    for feed in get_feeds(args):
         print feed.name
         if 'clean_actions' in feed.info:
             for action in feed.info['clean_actions']:
                 print ' -', action['task'], action['selector']
 
 def feed_clean_actions_add(args):
-    f = Feed.get(args[0])
+    f = Feed.get(args.feed)
     if not 'clean_actions' in f.info:
         f.info['clean_actions'] = []
-    f.info['clean_actions'].append({'selector': args[1], 'task':args[2]})
+    f.info['clean_actions'].append({'selector': args.selector, 'task':args.action})
     f.save()
 
 def feed_clean(args):
-    if len(args) > 0:
-        toClean = [Feed.get(f) for f in args]
-    else:
-        toClean = Feed.find()
-    do_task_for_feeds(Feed.clean, toClean)
+    do_task_for_feeds(Feed.clean, get_feeds(args))
 
 def feed_stats(args):
-    if len(args) > 0:
-        toStat = [Feed.get(f) for f in args]
-    else:
-        toStat = Feed.find()
-    do_task_for_feeds(Feed.stats_collect, toStat)
+    do_task_for_feeds(Feed.stats_collect, get_feeds(args))
 
 def do_task_for_feeds(task, feeds):
     for res in pool.map(task, feeds):
@@ -77,4 +44,49 @@ def do_task_for_feeds(task, feeds):
             res.join()
             print res.value
 
+def setup_parser(sp):
+    parser = sp.add_parser('rss', help='RSS commands')
+    subparsers = parser.add_subparsers(help='RSS sub-command help')
+    
+    # rss update
+    parser_update = subparsers.add_parser('update', help='Update RSS Feeds')
+    parser_update.add_argument('feed', nargs='*', help='Feed to update')
+    parser_update.set_defaults(func=update)
+
+    # rss feed
+    parser_feed = subparsers.add_parser('feed', help='RSS Feed Manipulation')
+
+    subparsers_feed = parser_feed.add_subparsers(help='Feed sub-command help')
+
+    # rss feed add <name> <url>
+    parser_feed_add = subparsers_feed.add_parser('add', help='Add new RSS Feed')
+    parser_feed_add.add_argument('name', help='Name of feed to add')
+    parser_feed_add.add_argument('url', help='URL of feed to add')
+    parser_feed_add.set_defaults(func=feed_add)
+
+    # rss feed clean_actions
+    parser_feed_clean_actions = subparsers_feed.add_parser('clean_actions', help='Manipulate Feed Entry clean directives')
+    subparsers_feed_clean_actions = parser_feed_clean_actions.add_subparsers(help='Feed Clean Actions sub-command help')
+    
+    # rss feed clean_actions show [<feed> ...]
+    parser_feed_clean_actions_show = subparsers_feed_clean_actions.add_parser('show', help='Show Feed Entry Clean Actions')
+    parser_feed_clean_actions_show.add_argument('feed', nargs='*', help='Name of feed to show')
+    parser_feed_clean_actions_show.set_defaults(func=feed_clean_actions_show)
+
+    # rss feed clean_action add <feed> <selector> <action>
+    parser_feed_clean_actions_add = subparsers_feed_clean_actions.add_parser('add', help='Add new Feed Entry Clean Action')
+    parser_feed_clean_actions_add.add_argument('feed', help='Name of feed to edit')
+    parser_feed_clean_actions_add.add_argument('selector', help='Selector to use')
+    parser_feed_clean_actions_add.add_argument('action', help='Action to take')
+    parser_feed_clean_actions_add.set_defaults(func=feed_clean_actions_add)
+
+    # rss feed clean [<feed> ...]
+    parser_feed_clean = subparsers_feed.add_parser('clean', help='Clean Entries for the given Feeds')
+    parser_feed_clean.add_argument('feed', nargs='*', help='Name of feed to clean')
+    parser_feed_clean.set_defaults(func=feed_clean)
+
+    # rss feed stats [<feed> ...]
+    parser_feed_stats = subparsers_feed.add_parser('stats', help='Generate Stats for the given Feeds')
+    parser_feed_stats.add_argument('feed', nargs='*', help='Name of feed to examine')
+    parser_feed_stats.set_defaults(func=feed_stats)
 
