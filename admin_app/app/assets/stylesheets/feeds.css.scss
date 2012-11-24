@@ -1,3 +1,40 @@
 // Place all the styles related to the feeds controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+div.entry_list {
+    display: table;
+    div.entry_header {
+        display: table-row;
+        span.entry_cell {
+            display: table-cell;
+            padding-left: 0.25em;
+            padding-right: 0.25em;
+            font-weight: bold;
+        }
+    }
+    div.entry_item {
+        display: table-row;
+        span.entry_cell {
+            display: table-cell;
+            padding-left: 0.25em;
+            padding-right: 0.25em;
+        }
+    }
+}
+
+div#feed_info {
+    display: table;
+    div.info_row {
+        display: table-row;
+        span.info_title {
+            font-weight: bold
+        }
+        span.info_title, span.info_value {
+            display: table-cell;
+            padding-left: 0.25em;
+            padding-right: 0.25em;
+        }
+    }
+}
+
