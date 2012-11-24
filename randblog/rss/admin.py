@@ -1,5 +1,7 @@
 from randblog.rss.feed import Feed
 from gevent.pool import Pool
+from gevent import sleep
+from datetime import datetime
 pool = Pool()
 
 def get_feeds(args):
@@ -9,11 +11,19 @@ def get_feeds(args):
         return map(Feed.get, args.feed)
 
 def update(args):
+    print "Starting Update", datetime.now()
     if not args.feed:
         feeds = Feed.find()
     else:
         feeds = [Feed.get(f) for f in args.feed]
     do_task_for_feeds(Feed.update, get_feeds(args))
+    print "Finished Update", datetime.now()
+
+def listen(args):
+    while True:
+        pool.spawn(update, args)
+        sleep(args.interval)
+
 
 def feed_add(args):
     Feed.add(args.name, args.url)
@@ -48,10 +58,16 @@ def setup_parser(sp):
     parser = sp.add_parser('rss', help='RSS commands')
     subparsers = parser.add_subparsers(help='RSS sub-command help')
     
-    # rss update
+    # rss update [<feed> ...]
     parser_update = subparsers.add_parser('update', help='Update RSS Feeds')
     parser_update.add_argument('feed', nargs='*', help='Feed to update')
     parser_update.set_defaults(func=update)
+    
+    # rss listen <interval> [<feed> ...]
+    parser_listen = subparsers.add_parser('listen', help='Update RSS Feeds')
+    parser_listen.add_argument('interval', type=int, help='Update interval')
+    parser_listen.add_argument('feed', nargs='*', help='Feed to listen to')
+    parser_listen.set_defaults(func=listen)
 
     # rss feed
     parser_feed = subparsers.add_parser('feed', help='RSS Feed Manipulation')

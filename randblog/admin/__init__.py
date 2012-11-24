@@ -8,24 +8,21 @@ parser = argparse.ArgumentParser(prog='randblog')
 
 subparsers = parser.add_subparsers(help = 'sub-command help')
 
-parser_global_stats = subparsers.add_parser('stats', help='extract stats from corpus')
-parser_global_generate = subparsers.add_parser('generate', help='generate text from stats')
 
-def global_stats(args):
+def stats(args):
     stats = Feed.stats()
-    if len(args) > 0:
-        with open(args[0], 'w') as out:
-            import json
-            json.dump(stats, out)
-parser_global_stats.set_defaults(func=global_stats)
 
-def global_generate(args):
-    n = None
+def generate(args):
+    if args.n:
+        print generate_text(n)
+    else:
+        print generate_text(None)
 
-    if len(args) > 0:
-        n = int(args[0])
+parser_stats = subparsers.add_parser('stats', help='extract stats from corpus')
+parser_stats.set_defaults(func=stats)
 
-    print generate_text(n)
-parser_global_generate.set_defaults(func=global_generate)
+parser_generate = subparsers.add_parser('generate', help='generate text from stats')
+parser_generate.add_argument('n', type=int, nargs='?', help='n parameter for nGram generator (leaving blank make it variable)')
+parser_generate.set_defaults(func=generate)
 
 rss_setup_parser(subparsers)
