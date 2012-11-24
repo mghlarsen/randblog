@@ -80,3 +80,7 @@ class Stats(object):
                 self._agg_ngram(curr[key], value, n - 1)
             else:
                 curr[key] += value
+
+    @property
+    def data(self):
+        return self._data
