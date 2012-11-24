@@ -1,7 +1,12 @@
 from randblog.rss import feed_collection, entry_collection
 from randblog.rss.entry import Entry
 from randblog.corpus.stats import Stats
+from datetime import datetime
+from time import mktime
 import feedparser
+
+def convert_time_tuple(t):
+   return datetime.fromtimestamp(mktime(t)) 
 
 class Feed(object):
     @classmethod
@@ -83,9 +88,9 @@ class Feed(object):
             if hasattr(self._feed, 'etag'):
                 self._feed_status['etag'] = self._feed.etag
             if hasattr(self._feed, 'updated_parsed'):
-                self._feed_status['updated'] = tuple(self._feed.updated_parsed)
+                self._feed_status['updated'] = convert_time_tuple(self._feed.updated_parsed)
             if hasattr(self._feed, 'modified_parsed'):
-                self._feed_status['modified'] = tuple(self._feed.modified_parsed)
+                self._feed_status['modified'] = convert_time_tuple(self._feed.modified_parsed)
             if not self._info is None:
                 self._info['status'] = self._feed_status
                 feed_collection.save(self._info)
@@ -96,13 +101,17 @@ class Feed(object):
                         if key in ('updated', 'modified', 'published'):
                             pass
                         elif key == 'updated_parsed':
-                            data['updated'] = tuple(value)
+                            data['updated'] = convert_time_tuple(value)
                         elif key == 'modified_parsed':
-                            data['modified'] = tuple(value)
+                            data['modified'] = convert_time_tuple(value)
                         elif key == 'published_parsed':
-                            data['published'] = tuple(value)
+                            data['published'] = convert_time_tuple(value)
                         else:
                             data[key] = value
+                    if 'updated' in data and not 'published' in data:
+                        data['published'] = data['updated']
+                    if not 'updated' in data and 'published' in data:
+                        data['updated'] = data['published']
                     e = Entry(self, data['id'], data)
                     self._entries[e.id] = e
                     e.clean()
