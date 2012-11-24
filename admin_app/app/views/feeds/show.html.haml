@@ -1,0 +1,32 @@
+%p#notice= notice
+
+%div
+  %h3= @feed.title
+  %div
+    %span Name
+    = @feed.name
+  %div
+    %span Subtitle
+    = @feed.subtitle
+  %div
+    %span URL
+    = @feed.url
+  %div
+    %span Link
+    = @feed.link
+  %div
+    %div
+      %span ID
+      %span Feed Name
+      %span Title
+      %span Date
+    - @feed.entries.desc(:published).each do |entry|
+      %div
+        %span= entry.id
+        %span= entry.feed_name
+        %span= entry.title
+        %span= entry.published
+//       %span= entry.attributes
+= link_to 'Edit', edit_feed_path(@feed)
+\|
+= link_to 'Back', feeds_path

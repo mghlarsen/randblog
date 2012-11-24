@@ -1,0 +1,26 @@
+%h2= @current_user.name
+
+%h4 Data
+%ul
+  %li= "provider: #{@current_user.provider}" 
+  %li= "uid: #{@current_user.uid}"
+  %li= "name: #{@current_user.name}"
+  %li= "email: #{@current_user.email}"
+
+%h4 Info
+%ul
+  - if @current_user.info
+    - @current_user.info.each do |key, value|
+      %li= "#{key}: #{value}"
+%h4 Extra
+%ul
+  - if @current_user.extra
+    - @current_user.extra.each do |key, value|
+      %li= "#{key}: #{value}"
+
+%h4 Credentials
+%ul
+  - if @current_user.credentials
+    - @current_user.credentials.each do |key,value|
+      %li= "#{key}: #{value}"
+ 

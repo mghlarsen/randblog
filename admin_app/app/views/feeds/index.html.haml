@@ -1,0 +1,29 @@
+%h1 Listing feeds
+
+%table
+  %tr
+    %th Name
+    %th Title
+    %th Subtitle
+    %th URL
+    %th Link
+    %th Entry Count
+    %th
+    %th
+    %th
+
+  - @feeds.each do |feed|
+    %tr
+      %td= feed.name
+      %td= feed.title
+      %td= feed.subtitle
+      %td= feed.url
+      %td= feed.link
+      %td= feed.entries.count
+      %td= link_to 'Show', feed
+      %td= link_to 'Edit', edit_feed_path(feed)
+      %td= link_to 'Destroy', feed, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Feed', new_feed_path
