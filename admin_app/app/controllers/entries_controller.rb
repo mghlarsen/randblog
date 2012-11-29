@@ -2,7 +2,7 @@ class EntriesController < ApplicationController
   # GET /entries
   # GET /entries.json
   def index
-    @entries = Entry.all.desc(:published)
+    @entries = Entry.all.desc(:published).limit(params[:limit] || 100)
 
     respond_to do |format|
       format.html # index.html.erb
