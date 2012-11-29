@@ -52,9 +52,13 @@ class Entry(object):
 
     def _stats_key(self):
         return {
-            'source':           'rss',
-            'rss_feed':         self._info['feed'],
-            'rss_feed_entry':   self.id
+            'source': {
+                'type': 'rss',
+                'rss_feed_name':    self._info['feed_name'],
+                'rss_feed_id':      self._info['feed'],
+                'rss_feed_entry':   self.id,
+                'rss_feed_entry_id':self._info['_id']
+            }
         }
 
     def clean(self):
@@ -62,10 +66,14 @@ class Entry(object):
         key.update({
             'text': self._cleaned_soup().get_text().strip()
         })
-        item = Item(key)
-        item.save()
-        self.info['corpus_item'] = item.id
-        self.save()
+        if 'corpus_item' in self.info and self.info['corpus_item'] and not self.corpus_item._data is None:
+            item = self.corpus_item
+            item._data.update(key)
+        else:
+            item = Item(key)
+            item.save()
+            self.info['corpus_item'] = item.id
+            self.save()
 
     @property
     def corpus_item(self):
