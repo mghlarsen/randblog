@@ -1,24 +1,6 @@
 %h1 Listing entries
 
-%table
-  %tr
-    %th ID
-    %th Feed Name
-    %th Title
-    %th Date
-    %th
-    %th
-    %th
-
-  - @entries.each do |entry|
-    %tr
-      %td= entry.id
-      %td= entry.feed_name
-      %td= entry.title
-      %td= entry[:published] || entry[:updated]
-      %td= link_to 'Show', entry
-      %td= link_to 'Edit', edit_entry_path(entry)
-      %td= link_to 'Destroy', entry, method: :delete, data: { confirm: 'Are you sure?' }
+= render partial: 'list', locals: {entries: @entries.desc(:published)}
 
 %br
 

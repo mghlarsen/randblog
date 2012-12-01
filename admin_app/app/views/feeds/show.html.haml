@@ -1,33 +1,20 @@
-%p#notice= notice
-
 %div
   %h3= @feed.title
-  %div#feed_info
-    %div.info_row
+  #feed_info
+    .info_row
       %span.info_title Name
       %span.info_value= @feed.name
-    %div.info_row
+    .info_row
       %span.info_title Subtitle
       %span.info_value= @feed.subtitle
-    %div.info_row
+    .info_row
       %span.info_title URL
       %span.info_value= @feed.url
-    %div.info_row
+    .info_row
       %span.info_title Link
       %span.info_value= @feed.link
   %h3 Feed Entries
-  %div.entry_list
-    %div.entry_header
-      %span.entry_cell ID
-      %span.entry_cell Feed Name
-      %span.entry_cell Title
-      %span.entry_cell Date
-    - @feed.entries.desc(:published).each do |entry|
-      %div.entry_item
-        %span.entry_cell= entry.id
-        %span.entry_cell= entry.feed_name
-        %span.entry_cell= entry.title
-        %span.entry_cell= entry.published
+  = render partial: 'entries/list', locals: {entries: @feed.entries.desc(:published), exclude_feed_name: true}
 //       %span= entry.attributes
 = link_to 'Edit', edit_feed_path(@feed)
 \|

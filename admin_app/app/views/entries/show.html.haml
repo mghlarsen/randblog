@@ -1,5 +1,26 @@
-%p#notice= notice
-
+%div
+  %h3= @entry.title
+  #entry_info
+    = info_row 'Feed', link_to(@entry.feed_name, feed_path(@entry.feed))
+    = info_row 'Published', @entry.published
+    = info_row 'Updated', @entry.updated
+    = info_row 'Author', @entry.author
+    = info_row 'RSS ID', @entry.attributes["id"]
+    = info_row 'Link', @entry.link
+    = info_row 'Corpus Item (ID)', @entry.corpus_item.id
+    .info_row
+      %span.info_title Content
+      .info_value
+        - @entry.content.each do |item|
+          .info_table
+            - item.each do |k, v|
+              = info_row k, v
+    .info_row
+      %span.info_title Attrs
+      .info_value
+        .info_table
+          - @entry.filter_attributes(["author", "author_detail", "feed", "feed_name", "published", "_id", "id", "updated", "corpus_item", "content", "link", "title"]).each do |attr, value|
+            = info_row attr, value
 
 = link_to 'Edit', edit_entry_path(@entry)
 \|

@@ -1,0 +1,15 @@
+- exclude_feed_name ||= false
+.entry_list
+  .entry_header
+    - if !exclude_feed_name
+      %span.entry_cell Feed
+    %span.entry_cell Title
+    %span.entry_cell Date
+  - entries.each do |entry|
+    .entry_item
+      - if !exclude_feed_name
+        %span.entry_cell= link_to entry.feed_name, feed_path(entry.feed)
+      %span.entry_cell= link_to entry.title, entry
+      %span.entry_cell= entry.published
+      %span.entry_cell= link_to 'Edit', edit_entry_path(entry)
+      %span.entry_cell= link_to 'Destroy', entry, method: :delete, data: { confirm: 'Are you sure?' }

@@ -23,14 +23,15 @@ div.entry_list {
     }
 }
 
-div#feed_info {
+div#feed_info, div#entry_info, div.info_table {
     display: table;
     div.info_row {
         display: table-row;
         span.info_title {
-            font-weight: bold
+            font-weight: bold;
+            white-space: nowrap;
         }
-        span.info_title, span.info_value {
+        span.info_title, .info_value {
             display: table-cell;
             padding-left: 0.25em;
             padding-right: 0.25em;
