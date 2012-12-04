@@ -2,20 +2,20 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-div.entry_list {
+div.entry_list, div.corpus_item_list {
     display: table;
-    div.entry_header {
+    div.entry_header, div.corpus_item_header {
         display: table-row;
-        span.entry_cell {
+        span.entry_cell, span.corpus_item_cell {
             display: table-cell;
             padding-left: 0.25em;
             padding-right: 0.25em;
             font-weight: bold;
         }
     }
-    div.entry_item {
+    div.entry_item, div.corpus_item {
         display: table-row;
-        span.entry_cell {
+        span.entry_cell, span.corpus_item_cell {
             display: table-cell;
             padding-left: 0.25em;
             padding-right: 0.25em;

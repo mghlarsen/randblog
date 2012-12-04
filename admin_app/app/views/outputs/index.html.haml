@@ -1,0 +1,25 @@
+%h1 Listing outputs
+
+%table
+  %tr
+    %th Date
+    %th Text
+    %th Type
+    %th Ngram
+    %th
+    %th
+    %th
+
+  - @outputs.each do |output|
+    %tr
+      %td= output.date
+      %td= output.text
+      %td= output.type
+      %td= output.nGram
+      %td= link_to 'Show', output
+      %td= link_to 'Edit', edit_output_path(output)
+      %td= link_to 'Destroy', output, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Output', new_output_path

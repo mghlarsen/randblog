@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Date:
+  = @output.date
+%p
+  %b Text:
+  = @output.text
+%p
+  %b Type:
+  = @output.type
+%p
+  %b Ngram:
+  = @output.ngram
+
+= link_to 'Edit', edit_output_path(@output)
+\|
+= link_to 'Back', outputs_path

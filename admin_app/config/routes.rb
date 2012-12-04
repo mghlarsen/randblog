@@ -1,6 +1,7 @@
 AdminApp::Application.routes.draw do
+  resources :outputs
+  resources :corpus_items
   resources :entries
-
   resources :feeds
 
   root to: 'home#index'

@@ -1,0 +1,22 @@
+%div
+  %h3= @corpus_item.title
+  #entry_info
+    = info_row 'ID', @corpus_item.id
+    = info_row 'Published', @corpus_item.published
+    = info_row 'Updated', @corpus_item.updated
+    = info_row 'Text', @corpus_item.text
+    .info_row
+      %span.info_title Source
+      .info_value
+        = info_row 'Type', @corpus_item.source['type']
+        = info_row 'INFO', @corpus_item.source.reject{|k,v| k == 'type'}
+    .info_row
+      %span.info_title Attrs
+      .info_value
+        .info_table
+          - @corpus_item.filter_attributes(['_id', 'text', 'title', 'source', 'published', 'updated']).each do |attr, value|
+            = info_row attr, value
+
+= link_to 'Edit', edit_corpus_item_path(@corpus_item)
+\|
+= link_to 'Back', corpus_items_path
