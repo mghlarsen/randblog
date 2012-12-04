@@ -64,7 +64,11 @@ class Entry(object):
     def clean(self):
         key = self._stats_key()
         key.update({
-            'text': self._cleaned_soup().get_text().strip()
+            'title': self._info['title'],
+            'text': self._cleaned_soup().get_text().strip(),
+            'published': self._info['published'],
+            'updated': self._info['updated']
+
         })
         if 'corpus_item' in self.info and self.info['corpus_item'] and not self.corpus_item._data is None:
             item = self.corpus_item

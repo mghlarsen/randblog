@@ -15,7 +15,7 @@ def generate_text(n):
         generated['type'] = 'fixed_nGram'
         generated['nGram'] = n
         generated['text'] = generate_nGram_text(stats, n)
-    generated['date'] = list(datetime.datetime.now().timetuple())
+    generated['date'] = datetime.datetime.now()
 
     output_collection.insert(generated)
     return generated['text']
