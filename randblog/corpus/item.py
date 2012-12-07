@@ -1,6 +1,8 @@
 from randblog.corpus import item_collection
 from randblog.corpus.stats import Stats
 
+__all__ = ['Item']
+
 class Item(object):
     def __init__(self, data):
         self._data = data
