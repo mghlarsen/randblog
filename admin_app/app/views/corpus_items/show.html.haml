@@ -11,10 +11,16 @@
         = info_row 'Type', @corpus_item.source['type']
         = info_row 'INFO', @corpus_item.source.reject{|k,v| k == 'type'}
     .info_row
+      %span.info_title Links
+      .info_value
+        .info_table
+          - @corpus_item.links.each do |link|
+            = info_row link['title'], link_to(link['href'])
+    .info_row
       %span.info_title Attrs
       .info_value
         .info_table
-          - @corpus_item.filter_attributes(['_id', 'text', 'title', 'source', 'published', 'updated']).each do |attr, value|
+          - @corpus_item.filter_attributes(['_id', 'text', 'title', 'source', 'published', 'updated', 'links']).each do |attr, value|
             = info_row attr, value
 
 = link_to 'Edit', edit_corpus_item_path(@corpus_item)

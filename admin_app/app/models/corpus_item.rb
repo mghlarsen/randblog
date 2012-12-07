@@ -5,6 +5,7 @@ class CorpusItem
   field :source, type: Hash
   field :published, type: DateTime
   field :updated, type: DateTime
+  field :links, type: Array
 
   def filter_attributes(excluded_fields)
     attributes.reject do |key, value|
