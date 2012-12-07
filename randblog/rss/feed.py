@@ -114,8 +114,8 @@ class Feed(object):
                         data['updated'] = data['published']
                     e = Entry(self, data['id'], data)
                     self._entries[e.id] = e
-                    e.clean()
                     e.save()
+                    e.clean()
 
     def update(self, update = True):
         self._feed_load(update)
