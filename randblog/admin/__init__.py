@@ -14,7 +14,7 @@ def stats(args):
 
 def generate(args):
     if args.n:
-        print generate_text(n)
+        print generate_text(args.n)
     else:
         print generate_text(None)
 
