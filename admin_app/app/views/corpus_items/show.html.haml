@@ -9,7 +9,11 @@
       %span.info_title Source
       .info_value
         = info_row 'Type', @corpus_item.source['type']
-        = info_row 'INFO', @corpus_item.source.reject{|k,v| k == 'type'}
+        - if @corpus_item.source['type'] == 'rss'
+          = info_row 'Feed', link_to(@corpus_item.source['rss_feed_name'], feed_path(@corpus_item.source['rss_feed_id']))
+          = info_row 'Entry', link_to(@corpus_item.source['rss_feed_entry'], entry_path(@corpus_item.source['rss_feed_entry_id']))
+        - else
+          = info_row 'INFO', @corpus_item.source.reject{|k,v| k == 'type'}
     .info_row
       %span.info_title Links
       .info_value
