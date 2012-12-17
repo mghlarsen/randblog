@@ -1,5 +1,6 @@
 from randblog.corpus import item_collection
 from randblog.corpus.stats import Stats
+from randblog.crawler.link import Link
 
 __all__ = ['Item']
 
@@ -38,4 +39,34 @@ class Item(object):
         while len(words) > 0 and words[-1] == '|':
             words.pop()
         return words
+
+    def extract_crawl_links(self):
+        updated = 0
+        link_updated = 0
+        existing = 0
+        need_save = False
+        for link in self._data['links']:
+            if 'id' in link:
+                l = Link.find(_id = link['id'], url = link['href'])
+                if (l is None):
+                    del link['id']
+                    need_save = True
+                elif (not l.saved) or (l.url != link['href']):
+                    del link['id']
+                    need_save = True
+                else:
+                    existing += 1
+                    continue
+
+            l = Link.find(url=link['href'])
+            if not l.saved:
+                l.save()
+                updated += 1
+            else:
+                link_updated += 1
+            link['id'] = l.id
+            need_save = True
+        if need_save:
+            self.save()
+        return len(self._data['links']), existing, link_updated, updated
 
