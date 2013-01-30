@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name regex:
+  = @link_filter.name_regex
+
+= link_to 'Edit', edit_link_filter_path(@link_filter)
+\|
+= link_to 'Back', link_filters_path

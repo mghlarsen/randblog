@@ -48,22 +48,22 @@ class Item(object):
         for link in self._data['links']:
             if 'id' in link:
                 l = Link.find(_id = link['id'], url = link['href'])
-                if (l is None):
-                    del link['id']
-                    need_save = True
-                elif (not l.saved) or (l.url != link['href']):
+                if (l is None) or (not l.saved) or (l.url != link['href']):
                     del link['id']
                     need_save = True
                 else:
                     existing += 1
+                    if not l.ensure_source(self.id):
+                        l.save()
                     continue
 
             l = Link.find(url=link['href'])
             if not l.saved:
-                l.save()
                 updated += 1
             else:
                 link_updated += 1
+            l.ensure_source(self.id)
+            l.save()
             link['id'] = l.id
             need_save = True
         if need_save:

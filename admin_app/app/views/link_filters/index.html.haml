@@ -1,0 +1,19 @@
+%h1 Listing link_filters
+
+%table
+  %tr
+    %th Name regex
+    %th
+    %th
+    %th
+
+  - @link_filters.each do |link_filter|
+    %tr
+      %td= link_filter.name_regex
+      %td= link_to 'Show', link_filter
+      %td= link_to 'Edit', edit_link_filter_path(link_filter)
+      %td= link_to 'Destroy', link_filter, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Link filter', new_link_filter_path

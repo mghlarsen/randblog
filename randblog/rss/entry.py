@@ -68,7 +68,9 @@ class Entry(object):
             self.__cleaned_links = [{'href':self._info['link'], 'title': self._info['title']}]
             soup = self._content_soup()
             for l in soup.select('a[href]'):
-                self.__cleaned_links.append({'title': l.get_text().strip(), 'href': clean_link(l['href'])})
+                href = clean_link(l['href'])
+                if not href is None:
+                    self.__cleaned_links.append({'title': l.get_text().strip(), 'href': href})
         return self.__cleaned_links
 
     def _stats_key(self):
@@ -96,11 +98,13 @@ class Entry(object):
             item = self.corpus_item
             item._data.update(key)
             item.save()
+            item.extract_crawl_links()
         else:
             item = Item(key)
             item.save()
             self.info['corpus_item'] = item.id
             self.save()
+            item.extract_crawl_links()
 
     @property
     def corpus_item(self):

@@ -1,0 +1,13 @@
+= form_for @link_filter do |f|
+  - if @link_filter.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@link_filter.errors.count, "error")} prohibited this link_filter from being saved:"
+      %ul
+        - @link_filter.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name_regex
+    = f.text_field :name_regex
+  .actions
+    = f.submit 'Save'

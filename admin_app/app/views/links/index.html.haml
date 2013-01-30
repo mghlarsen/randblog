@@ -1,0 +1,22 @@
+%h1 Listing links
+
+%table
+  %tr
+    %th URL
+    %th Sources
+    %th
+    %th
+    %th
+
+  - @links.each do |link|
+    %tr
+      %td= link.url
+      %td
+        %ul
+          - link.srcs.each do |src|
+            %li= link_to src.title, src
+      %td= link_to 'Show', link
+      %td= link_to 'Edit', edit_link_path(link)
+      %td= link_to 'Destroy', link, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br

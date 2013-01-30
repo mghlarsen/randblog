@@ -3,10 +3,11 @@ from randblog.crawler import link_collection
 class Link(object):
     def __init__(self, url=None, info=None):
         if info is None:
-            info = {}
+            info = {'sources':[]}
         if not url is None:
             self._info = info
             self._info['url'] = url
+            self._info['sources'] = []
         else:
             self._info = info
 
@@ -26,6 +27,15 @@ class Link(object):
 
     def save(self):
         link_collection.save(self._info)
+
+    def ensure_source(self, id):
+        if not 'sources' in self._info:
+            self._info['sources'] = []
+        if not id in self._info['sources']:
+            self._info['sources'].append(id)
+            return False
+        else:
+            return True
 
     @classmethod
     def find(cls, **kw):

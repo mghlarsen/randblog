@@ -1,0 +1,21 @@
+%h1 Listing domains
+
+%table
+  %tr
+    %th Name
+    %th Ignore regexes
+    %th
+    %th
+    %th
+
+  - @domains.each do |domain|
+    %tr
+      %td= domain.name
+      %td= domain.ignore_regexes
+      %td= link_to 'Show', domain
+      %td= link_to 'Edit', edit_domain_path(domain)
+      %td= link_to 'Destroy', domain, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Domain', new_domain_path
