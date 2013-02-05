@@ -3,5 +3,6 @@ feedparser==5.1.2
 gevent==0.13.8
 greenlet==0.4.0
 html5lib==0.95
+mongoengine==0.7.9
 pymongo==2.3
 wsgiref==0.1.2
