@@ -5,9 +5,10 @@
     = info_row 'Published', @entry.published
     = info_row 'Updated', @entry.updated
     = info_row 'Author', @entry.author
-    = info_row 'RSS ID', @entry.attributes["id"]
+    = info_row 'RSS ID', @entry.entry_id
     = info_row 'Link', @entry.link
-    = info_row 'Corpus Item (ID)', @entry.corpus_item.id
+    - if !@entry.corpus_item.nil?
+      = info_row 'Corpus Item (ID)', @entry.corpus_item.id
     - if @entry.attributes.include? "content"
       .info_row
         %span.info_title Content

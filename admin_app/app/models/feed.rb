@@ -8,4 +8,6 @@ class Feed
   field :status, type: Hash
 
   has_many :entries, foreign_key: :feed
+
+  store_in collection: 'feed'
 end
