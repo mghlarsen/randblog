@@ -17,7 +17,6 @@ class FeedStatus(EmbeddedDocument):
     modified = DateTimeField()
     version = StringField()
     encoding = StringField()
-    
 
 class Feed(Document):
     name = StringField(required=True)
