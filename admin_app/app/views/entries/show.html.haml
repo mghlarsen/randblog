@@ -1,14 +1,14 @@
 %div
   %h3= @entry.title
   #entry_info
-    = info_row 'Feed', link_to(@entry.feed_name, feed_path(@entry.feed))
+    = info_row 'Feed', link_to(@entry.feed.name, feed_path(@entry.feed))
     = info_row 'Published', @entry.published
     = info_row 'Updated', @entry.updated
     = info_row 'Author', @entry.author
     = info_row 'RSS ID', @entry.entry_id
     = info_row 'Link', @entry.link
     - if !@entry.corpus_item.nil?
-      = info_row 'Corpus Item (ID)', @entry.corpus_item.id
+      = info_row 'Corpus Item', link_to(@entry.corpus_item.id, @entry.corpus_item)
     - if @entry.attributes.include? "content"
       .info_row
         %span.info_title Content
