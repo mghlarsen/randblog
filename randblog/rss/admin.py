@@ -15,7 +15,7 @@ def update(feed_names):
     do_task_for_feeds(Feed.update, get_feeds(feed_names))
     print "Finished Update", datetime.now()
 
-def listen(feed_names, interval)
+def listen(feed_names, interval):
     while True:
         pool.spawn(update, feed_names)
         sleep(interval)
