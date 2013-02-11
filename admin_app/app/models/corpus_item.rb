@@ -14,10 +14,14 @@ class CorpusItem
   end
 
   def source_obj
-    if source['type'] == 'rss'
-      @source_obj = Entry.find(source['entry'])
-    elsif source['type'] == 'link'
-      @source_obj = Link.find(source['link'])
+    begin
+      if source['type'] == 'rss'
+        @source_obj = Entry.find(source['entry'])
+      elsif source['type'] == 'link'
+        @source_obj = Link.find(source['link'])
+      end
+    rescue Mongoid::Errors::DocumentNotFound
+      @source_obj = nil
     end
   end
 end
