@@ -1,4 +1,4 @@
-from randblog.rss.feed_engine import Feed
+from randblog.rss.feed import Feed
 from gevent.pool import Pool
 from gevent import sleep
 from datetime import datetime
