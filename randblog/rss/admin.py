@@ -20,9 +20,6 @@ def listen(feed_names, interval):
         pool.spawn(update, feed_names)
         sleep(interval)
 
-def feed_add(args):
-    Feed.create(name = args.name, url = args.url)
-
 def do_task_for_feeds(task, feeds):
     for res in pool.map(task, feeds):
         if not res is None and hasattr(res, 'join'):
@@ -43,13 +40,3 @@ def setup_parser(sp):
     parser_listen.add_argument('interval', type=int, help='Update interval')
     parser_listen.add_argument('feed', nargs='*', help='Feed to listen to')
     parser_listen.set_defaults(func=lambda args: listen(args.feed, args.interval))
-
-    # rss feed
-    parser_feed = subparsers.add_parser('feed', help='RSS Feed Manipulation')
-    subparsers_feed = parser_feed.add_subparsers(help='Feed sub-command help')
-
-    # rss feed add <name> <url>
-    parser_feed_add = subparsers_feed.add_parser('add', help='Add new RSS Feed')
-    parser_feed_add.add_argument('name', help='Name of feed to add')
-    parser_feed_add.add_argument('url', help='URL of feed to add')
-    parser_feed_add.set_defaults(func=feed_add)

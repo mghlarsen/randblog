@@ -1,8 +1,7 @@
-from randblog import db
 from urlparse import urlsplit, SplitResult
 import re
 
-__all__ = ['clean_link', 'link_collection']
+__all__ = ['clean_link']
 
 __utm_matcher = re.compile(r'((?:^|\&)utm_[_a-z]+=[^&]*)')
 
@@ -17,6 +16,3 @@ def clean_link(url):
         query = __utm_matcher.sub('', o.query)
         o = SplitResult(o.scheme, o.netloc, o.path, query, '')
     return o.geturl()
-
-link_collection = db['links']
-
