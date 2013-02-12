@@ -42,24 +42,3 @@ class CorpusItem(DynamicDocument):
                 link.id.sources.append(self)
         if need_save:
             self.save()
-
-def convert_old_corpus_item(entry, e):
-    i = e.corpus_item
-    try:
-        item = CorpusItem.objects.get(source__type = 'rss', source__entry = entry)
-        created = False
-    except CorpusItem.DoesNotExist:
-        item = CorpusItem()
-        item.source = CorpusItemSource(type = 'rss', entry = entry)
-        created = True
-    item.title = i._data['title']
-    item.text = i._data['text']
-    item.published = i._data['published']
-    item.updated = i._data.get('updated', item.published)
-    if len(item.links) < len(i._data['links']):
-        for l in i._data['links']:
-            data = dict(l)
-            del data['id']
-            item.links.append(CorpusItemLink(**data))
-    item.save()
-    return item
