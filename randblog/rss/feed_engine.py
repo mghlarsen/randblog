@@ -47,7 +47,7 @@ class Feed(Document):
                 self.status.modified = convert_time_tuple(feed.modified_parsed)
 
             for e_data in feed.entries:
-                e, created = Entry.objects.get_or_create(feed=self, entry_id=e_data['id'], title=e_data['title'])
+                e, created = Entry.objects.get_or_create(feed=self, entry_id=e_data['id'], defaults = {'title':e_data['title']})
                 e.populate_from_dict_info(e_data)
                 if created and e.published is None:
                     e.published = datetime.utcnow()
