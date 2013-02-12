@@ -3,6 +3,8 @@ import feedparser
 from datetime import datetime
 from mongoengine import *
 
+__all__ = ['Feed', 'FeedStatus', 'FeedCleanAction']
+
 class FeedCleanAction(EmbeddedDocument):
     meta = {'allow_inheritance':False}
     task = StringField(required=True)

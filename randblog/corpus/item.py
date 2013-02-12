@@ -1,5 +1,7 @@
 from mongoengine import *
 
+__all__ = ['CorpusItem', 'CorpusItemLink', 'CorpusItemSource', 'CORPUS_ITEM_SOURCE_TYPES']
+
 CORPUS_ITEM_SOURCE_TYPES = ('rss', 'link')
 
 class CorpusItemSource(EmbeddedDocument):
