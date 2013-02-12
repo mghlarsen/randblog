@@ -111,6 +111,7 @@ class Entry(DynamicDocument):
         item.text = self.cleaned_soup.get_text().strip()
         item.published = self.published
         item.updated = self.updated
+        item.links = []
         for l in self.cleaned_links:
             item.links.append(CorpusItemLink(**l))
         item.save()
