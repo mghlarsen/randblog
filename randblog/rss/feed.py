@@ -34,7 +34,7 @@ class Feed(Document):
         feed = self._get_feed(update)
         if not feed is None:
             from randblog.rss.entry import Entry
-            import randblog.corpus.item_engine
+            import randblog.corpus.item
             import randblog.crawler.link
             print "Feed Data Modified"
             self.status.version = feed.version

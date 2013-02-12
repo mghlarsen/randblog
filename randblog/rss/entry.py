@@ -97,7 +97,7 @@ class Entry(DynamicDocument):
                 self.extra_info[attr] = value
 
     def clean(self):
-        from randblog.corpus.item_engine import CorpusItem, CorpusItemLink, CorpusItemSource
+        from randblog.corpus.item import CorpusItem, CorpusItemLink, CorpusItemSource
         try:
             item = CorpusItem.objects.get(source__type = 'rss', source__entry = self)
             created = False

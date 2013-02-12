@@ -1,72 +1,65 @@
-from randblog.corpus import item_collection
-from randblog.corpus.stats import Stats
-from randblog.crawler.link import Link
+from mongoengine import *
 
-__all__ = ['Item']
+CORPUS_ITEM_SOURCE_TYPES = ('rss', 'link')
 
-class Item(object):
-    def __init__(self, data):
-        self._data = data
+class CorpusItemSource(EmbeddedDocument):
+    type = StringField(required=True, choices = CORPUS_ITEM_SOURCE_TYPES)
+    entry = ReferenceField('Entry', dbref=False)
+    link = ReferenceField('Link', dbref=False)
 
-    @classmethod
-    def find(cls, query={}):
-        return map(lambda i: cls(i), item_collection.find(query))
+class CorpusItemLink(EmbeddedDocument):
+    href = StringField(required=True)
+    title = StringField(required=True)
+    id = ReferenceField('Link', dbref=False)
 
-    @classmethod
-    def find_one(cls, query={}):
-        return cls(item_collection.find_one(query))
-
-    @property
-    def id(self):
-        return self._data['_id']
-
-    def save(self):
-        item_collection.save(self._data)
-
-    def stats_collect(self, update = False):
-        query = dict(self._data)
-        del query['_id']
-        del query['text']
-        stats = Stats('item', query)
-        if len(stats.get_ids()) == 0 or update:
-            stats.clear()
-            stats.collect_words(self.get_split_words())
-            stats.save()
-            self._data['stats'] = stats.get_ids()
+class CorpusItem(DynamicDocument):
+    title = StringField(required=True)
+    text = StringField()
+    published = DateTimeField()
+    updated = DateTimeField()
+    source = EmbeddedDocumentField(CorpusItemSource, required=True)
+    links = ListField(EmbeddedDocumentField(CorpusItemLink))
 
     def get_split_words(self):
-        words = self._data['text'].split()
+        words = self.text.split()
         while len(words) > 0 and words[-1] == '|':
             words.pop()
         return words
 
     def extract_crawl_links(self):
+        from randblog.crawler.link import Link
         updated = 0
         link_updated = 0
         existing = 0
         need_save = False
-        for link in self._data['links']:
-            if 'id' in link:
-                l = Link.find(_id = link['id'], url = link['href'])
-                if (l is None) or (not l.saved) or (l.url != link['href']):
-                    del link['id']
-                    need_save = True
-                else:
-                    existing += 1
-                    if not l.ensure_source(self.id):
-                        l.save()
-                    continue
-
-            l = Link.find(url=link['href'])
-            if not l.saved:
-                updated += 1
-            else:
-                link_updated += 1
-            l.ensure_source(self.id)
-            l.save()
-            link['id'] = l.id
-            need_save = True
+        for link in self.links:
+            if link.id is None:
+                need_save = True
+                url = clean_link(link.href)
+                link.id, created = Link.get_or_create(url = url)
+            if not self in link.id.sources:
+                need_save = True
+                link.id.sources.append(self)
         if need_save:
             self.save()
-        return len(self._data['links']), existing, link_updated, updated
 
+def convert_old_corpus_item(entry, e):
+    i = e.corpus_item
+    try:
+        item = CorpusItem.objects.get(source__type = 'rss', source__entry = entry)
+        created = False
+    except CorpusItem.DoesNotExist:
+        item = CorpusItem()
+        item.source = CorpusItemSource(type = 'rss', entry = entry)
+        created = True
+    item.title = i._data['title']
+    item.text = i._data['text']
+    item.published = i._data['published']
+    item.updated = i._data.get('updated', item.published)
+    if len(item.links) < len(i._data['links']):
+        for l in i._data['links']:
+            data = dict(l)
+            del data['id']
+            item.links.append(CorpusItemLink(**data))
+    item.save()
+    return item
