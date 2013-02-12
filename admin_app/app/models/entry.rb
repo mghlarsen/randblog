@@ -1,9 +1,9 @@
 class Entry
   include Mongoid::Document
-  store_in collection: 'entries'
+  store_in collection: 'entry'
   field :feed_name, type: String
   field :links, type: Array
-  field :id, type: String
+  field :entry_id, type: String
   field :author, type: String
   field :published, type: DateTime
   field :updated, type: DateTime

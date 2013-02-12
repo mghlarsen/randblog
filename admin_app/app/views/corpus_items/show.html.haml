@@ -10,8 +10,10 @@
       .info_value
         = info_row 'Type', @corpus_item.source['type']
         - if @corpus_item.source['type'] == 'rss'
-          = info_row 'Feed', link_to(@corpus_item.source['rss_feed_name'], feed_path(@corpus_item.source['rss_feed_id']))
-          = info_row 'Entry', link_to(@corpus_item.source['rss_feed_entry'], entry_path(@corpus_item.source['rss_feed_entry_id']))
+          = info_row 'Entry', link_to(@corpus_item.source_obj.title, entry_path(@corpus_item.source['entry']))
+          = info_row 'Feed', link_to(@corpus_item.source_obj.feed.name, feed_path(@corpus_item.source_obj.feed))
+        - elsif @corpus_item.source['type'] == 'link'
+          = info_row 'Link', link_to(@corpus_item.source_obj.href, link_path(@corpus_item.source['link']))
         - else
           = info_row 'INFO', @corpus_item.source.reject{|k,v| k == 'type'}
     .info_row

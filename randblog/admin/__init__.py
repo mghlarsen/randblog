@@ -1,5 +1,4 @@
 from randblog.rss.admin import setup_parser as rss_setup_parser
-from randblog.corpus.admin import setup_parser as corpus_setup_parser
 from randblog.generator.core import generate_text
 
 import argparse
@@ -19,4 +18,3 @@ parser_generate.add_argument('n', type=int, nargs='?', help='n parameter for nGr
 parser_generate.set_defaults(func=generate)
 
 rss_setup_parser(subparsers)
-corpus_setup_parser(subparsers)
