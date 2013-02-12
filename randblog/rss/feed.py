@@ -35,7 +35,7 @@ class Feed(Document):
         if not feed is None:
             from randblog.rss.entry import Entry
             import randblog.corpus.item_engine
-            import randblog.crawler.link_engine
+            import randblog.crawler.link
             print "Feed Data Modified"
             self.status.version = feed.version
             self.status.encoding = feed.encoding

@@ -27,7 +27,7 @@ class CorpusItem(DynamicDocument):
         return words
 
     def extract_crawl_links(self):
-        from randblog.crawler.link_engine import Link
+        from randblog.crawler.link import Link
         updated = 0
         link_updated = 0
         existing = 0
