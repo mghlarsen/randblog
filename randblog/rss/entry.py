@@ -81,6 +81,7 @@ class Entry(DynamicDocument):
             elif attr == 'author_detail':
                 self.author_detail = EntryAuthorDetail(**value)
             elif attr == 'links':
+                self.links = []
                 for l in value:
                     self.links.append(EntryLink(**l))
             elif attr == 'subtitle':

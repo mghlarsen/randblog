@@ -29,6 +29,12 @@ class Feed(Document):
     status = EmbeddedDocumentField(FeedStatus)
     clean_actions = ListField(EmbeddedDocumentField(FeedCleanAction))
 
+    def entries(self, **kwargs):
+        from randblog.rss.entry import Entry
+        import randblog.corpus.item
+        import randblog.crawler.link
+        return Entry.objects(feed = self, **kwargs)
+
     def update(self, update = True):
         self._feed_load(update)
 
