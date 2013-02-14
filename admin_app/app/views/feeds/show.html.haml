@@ -1,18 +1,10 @@
 %div
   %h3= @feed.title
-  #feed_info
-    .info_row
-      %span.info_title Name
-      %span.info_value= @feed.name
-    .info_row
-      %span.info_title Subtitle
-      %span.info_value= @feed.subtitle
-    .info_row
-      %span.info_title URL
-      %span.info_value= @feed.url
-    .info_row
-      %span.info_title Link
-      %span.info_value= @feed.link
+  #feed_info.info_table
+    = info_row 'Name', @feed.name
+    = info_row 'Subtitle', @feed.subtitle
+    = info_row 'URL', @feed.url
+    = info_row 'Link', @feed.link
   %h3 Feed Entries
   = render partial: 'entries/list', locals: {entries: @feed.entries.desc(:published), exclude_feed_name: true}
 //       %span= entry.attributes

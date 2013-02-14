@@ -1,30 +1,54 @@
 %div
   %h3= @entry.title
-  #entry_info
-    = info_row 'Feed', link_to(@entry.feed.name, feed_path(@entry.feed))
-    = info_row 'Published', @entry.published
-    = info_row 'Updated', @entry.updated
+  #entry_info.info_table
+    = info_row 'Title Detail', info_table_hash(@entry.title_detail.reject{|k,v| k == '_cls' || k == '_types'})
+    = info_row 'Feed', link_to(@entry.feed.title, feed_path(@entry.feed))
+    = info_row 'Published', @entry.published.in_time_zone('America/Denver')
+    - if !@entry.updated.nil?
+      = info_row 'Updated', @entry.updated
     = info_row 'Author', @entry.author
+    = info_row 'Author Detail', info_table_hash(@entry.author_detail.reject{|k,v| k == '_cls' || k == '_types'})
     = info_row 'RSS ID', @entry.entry_id
     = info_row 'Link', @entry.link
     - if !@entry.corpus_item.nil?
       = info_row 'Corpus Item', link_to(@entry.corpus_item.id, @entry.corpus_item)
-    - if @entry.attributes.include? "content"
-      .info_row
-        %span.info_title Content
-        .info_value
-          - @entry.content.each do |item|
-            .info_table
-              - item.each do |k, v|
-                = info_row k, v
+    - if @entry.attributes.include? "content" && @entry.content.length > 0
+      = info_row 'Content', info_table_list(@entry.content)
     - if @entry.attributes.include? "summary"
       = info_row 'Summary', @entry.summary
-    .info_row
-      %span.info_title Attrs
-      .info_value
-        .info_table
-          - @entry.filter_attributes(["author", "author_detail", "feed", "feed_name", "published", "_id", "id", "updated", "corpus_item", "content", "link", "title"]).each do |attr, value|
-            = info_row attr, value
+      - if @entry.attributes.include? "summary_detail"
+        = info_row 'Summary Detail', info_table_hash(@entry.summary_detail.reject{|k,v| k == '_cls' || k == '_types'})
+    - if @entry.attributes.include? "media_info" && @entry.media_info.length > 0
+      = info_row 'Media Info', info_table_hash(@entry.media_info)
+    - if @entry.links.length > 0
+      .info_row
+        %span.info_title Links
+        .info_value
+          .info_table
+            .info_row
+              %span.info_title Type
+              %span.info_title Rel
+              %span.info_title HRef
+            - @entry.links.each do |link|
+              .info_row
+                .info_value= link['type']
+                .info_value= link['rel']
+                .info_value= link['href']
+    - if @entry.tags.length > 0
+      .info_row
+        %span.info_title Tags
+        .info_value
+          .info_table
+            .info_row
+              %span.info_title Term
+              %span.info_title Scheme
+              %span.info_title Label
+            - @entry.tags.each do |tag|
+              .info_row
+                .info_value= tag['term']
+                .info_value= tag['scheme']
+                .info_value= tag['label']
+    = info_row 'Extra Info', info_table_hash(@entry.extra_info)
 
 = link_to 'Edit', edit_entry_path(@entry)
 \|

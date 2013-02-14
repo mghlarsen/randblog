@@ -10,10 +10,4 @@ class Entry
 
   belongs_to :feed, foreign_key: :feed
   belongs_to :corpus_item, foreign_key: :corpus_item
-
-  def filter_attributes(excluded_fields)
-    attributes.reject do |key, value|
-      excluded_fields.include?(key)
-    end
-  end
 end
