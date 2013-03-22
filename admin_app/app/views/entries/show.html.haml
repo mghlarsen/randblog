@@ -10,6 +10,8 @@
     = info_row 'Author Detail', info_table_hash(@entry.author_detail.reject{|k,v| k == '_cls' || k == '_types'})
     = info_row 'RSS ID', @entry.entry_id
     = info_row 'Link', @entry.link
+    = info_row 'Text', @entry.cleaned_text
+    = info_row 'Cleaned HTML', h(@entry.cleaned_html)
     - if !@entry.corpus_item.nil?
       = info_row 'Corpus Item', link_to(@entry.corpus_item.id, @entry.corpus_item)
     - if @entry.attributes.include? "content" && @entry.content.length > 0

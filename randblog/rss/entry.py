@@ -116,6 +116,8 @@ class Entry(DynamicDocument):
         for l in self.cleaned_links:
             item.links.append(CorpusItemLink(**l))
         item.save()
+        self.corpus_item = item
+        self.save()
 
     def _content_soup(self):
         if len(self.content) > 0:

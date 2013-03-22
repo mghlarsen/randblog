@@ -1,13 +1,13 @@
 AdminApp::Application.routes.draw do
   resources :link_filters
-
   resources :domains
-
   resources :links
   resources :outputs
   resources :corpus_items
   resources :entries
-  resources :feeds
+  resources :feeds do
+    resources :clean_actions, controller: 'feed_clean_actions'
+  end
 
   root to: 'home#index'
 
