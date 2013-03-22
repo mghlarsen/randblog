@@ -1,2 +1,24 @@
-%h1 FeedCleanActions#show
-%p Find me in app/views/feed_clean_actions/show.html.haml
+%table
+  %tr
+    %th Selector
+    %td
+      %code= @clean_action.selector
+  %tr
+    %th Match Text
+    %td
+      - if @clean_action.attributes.include? "match_text"
+        %code= "\"#{@clean_action.match_text}\""
+      - else
+        N/A
+  %tr
+    %th Contains Text
+    %td
+      - if @clean_action.attributes.include? "contains_text"
+        %code= "\"#{@clean_action.contains_text}\""
+      - else
+        N/A
+  %tr
+    %th Action
+    %td= @clean_action.task
+= link_to "Edit", edit_feed_clean_action_path(@feed, @clean_action)
+= link_to "Destroy", feed_clean_action_path(@feed, @clean_action), method: :delete, data: { confirm: 'Are you sure?' }

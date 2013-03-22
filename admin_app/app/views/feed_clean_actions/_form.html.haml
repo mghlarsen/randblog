@@ -1,0 +1,14 @@
+= form_for @clean_action do |f|
+  - if @clean_action.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@clean_actions.errors.count, "error")} prohibited this feed clean action from being saved:"
+      %ul
+        - @clean_action.errors.full_messages.each do |msg|
+          %li= msg
+  .info_table
+    = info_form_row "Selector", :selector, :text_field, f
+    = info_form_row "Contains Text", :contains_text, :text_field, f
+    = info_form_row "Match Text", :match_text, :text_field, f
+    = info_form_row "Task", :task, :text_field, f
+  .actions
+    = f.submit 'Save'

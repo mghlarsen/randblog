@@ -1,2 +1,6 @@
-%h1 FeedCleanActions#edit
-%p Find me in app/views/feed_clean_actions/edit.html.haml
+%h1 Editing feed clean action
+= render 'form'
+
+= link_to 'Show', feed_clean_action_path(@feed, @clean_action)
+\|
+= link_to 'Back', feed_clean_actions_path(@feed)

@@ -9,7 +9,7 @@
       .info_row
         %span.info_title Clean Actions
         .info_value
-          = render partial: 'feed_clean_actions/list', locals: {feed_clean_actions: @feed.feed_clean_actions}
+          = render partial: 'feed_clean_actions/list', locals: {feed_clean_actions: @feed.feed_clean_actions, feed: @feed}
   %h3 Feed Entries
   = render partial: 'entries/list', locals: {entries: @feed.entries.desc(:published).limit(100), exclude_feed_name: true}
 = link_to 'Edit', edit_feed_path(@feed)

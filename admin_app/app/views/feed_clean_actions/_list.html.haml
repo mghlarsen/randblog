@@ -19,3 +19,7 @@
         - else
           N/A
       %td= clean_action.task
+      %td= link_to "Show", feed_clean_action_path(feed, clean_action)
+      %td= link_to "Edit", edit_feed_clean_action_path(feed, clean_action)
+      %td= link_to "Destroy", feed_clean_action_path(feed, clean_action), method: :delete, data: { confirm: 'Are you sure?' }
+= link_to "New", new_feed_clean_action_path(feed)
