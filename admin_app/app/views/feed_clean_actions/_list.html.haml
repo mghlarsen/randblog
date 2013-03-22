@@ -1,0 +1,21 @@
+%table
+  %tr
+    %th Selector
+    %th Match Text
+    %th Contains Text
+    %th Action
+  - feed_clean_actions.each do |clean_action|
+    %tr
+      %td
+        %code= clean_action["selector"]
+      %td
+        - if clean_action.attributes.include? "match_text"
+          %code= "\"#{clean_action.match_text}\""
+        - else
+          N/A
+      %td
+        - if clean_action.attributes.include? "contains_text"
+          %code= "\"#{clean_action.contains_text}\""
+        - else
+          N/A
+      %td= clean_action.task

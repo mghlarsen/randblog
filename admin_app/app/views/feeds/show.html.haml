@@ -9,30 +9,9 @@
       .info_row
         %span.info_title Clean Actions
         .info_value
-          %table
-            %tr
-              %th Selector
-              %th Match Text
-              %th Contains Text
-              %th Action
-            - @feed.feed_clean_actions.each do |clean_action|
-              %tr
-                %td
-                  %code= clean_action["selector"]
-                %td
-                  - if clean_action.attributes.include? "match_text"
-                    %code= "\"#{clean_action.match_text}\""
-                  - else
-                    N/A
-                %td
-                  - if clean_action.attributes.include? "contains_text"
-                    %code= "\"#{clean_action.contains_text}\""
-                  - else
-                    N/A
-                %td= clean_action.task
+          = render partial: 'feed_clean_actions/list', locals: {feed_clean_actions: @feed.feed_clean_actions}
   %h3 Feed Entries
   = render partial: 'entries/list', locals: {entries: @feed.entries.desc(:published).limit(100), exclude_feed_name: true}
-//       %span= entry.attributes
 = link_to 'Edit', edit_feed_path(@feed)
 \|
 = link_to 'Back', feeds_path
